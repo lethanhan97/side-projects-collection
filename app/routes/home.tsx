@@ -1,5 +1,5 @@
 import type { Route } from "./+types/home";
-import { Form } from "../form";
+import { FormPage } from "../form";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -9,5 +9,5 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  return <Form />;
+  return <FormPage />;
 }
