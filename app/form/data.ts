@@ -42,8 +42,8 @@ export const formData: FormStructure = {
         {
           nodeType: "input",
           inputType: "text",
-          name: "username",
-          label: "Username",
+          name: "hobby",
+          label: "Hobby",
           required: true,
           inputMeta: {
             placeholder: "Username",
