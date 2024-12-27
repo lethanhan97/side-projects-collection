@@ -1,5 +1,5 @@
 import type { FormProps } from "antd";
-import { Alert, Button, Col, Form, Input, Row, Typography } from "antd";
+import { Affix, Alert, Button, Col, Form, Input, Row, Typography } from "antd";
 import { formData } from "./data";
 import type { FormStructure } from "./types";
 import Editor, { type OnMount } from "@monaco-editor/react";
@@ -10,6 +10,7 @@ import { RenderForm } from "./render-form";
 import { validateAndTransformEditorValue } from "./utils";
 
 export function FormPage() {
+  const [form] = Form.useForm();
   const [formJSON, setFormJSON] = useState<FormStructure>(formData);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -37,6 +38,7 @@ export function FormPage() {
 
       setFormJSON(formStructure);
       setErrorMessage(null);
+      form.resetFields();
     } catch (e: unknown) {
       if (e instanceof Error) setErrorMessage(e.message);
     }
@@ -49,26 +51,36 @@ export function FormPage() {
       </header>
 
       <section className="mb-6 flex flex-col justify-center items-center">
-        <Button
-          className="w-[fit-content]"
-          type="primary"
-          icon={<PlayCircleOutlined />}
-          size={"large"}
-          onClick={handleRun}
-        >
-          Run
-        </Button>
+        <Affix offsetTop={50}>
+          <Button
+            className="w-[fit-content]"
+            type="primary"
+            icon={<PlayCircleOutlined />}
+            size={"large"}
+            onClick={handleRun}
+          >
+            Run
+          </Button>
+        </Affix>
 
         {errorMessage && (
           <Alert className="mt-6" message={errorMessage} type="error" />
         )}
       </section>
 
-      <Row gutter={64}>
-        <Col span={12}>
-          <section>
+      <Row gutter={[64, 64]}>
+        <Col
+          xs={{
+            span: 24,
+            order: 2,
+          }}
+          md={{
+            span: 12,
+            order: 1,
+          }}
+        >
+          <section className="sm:h-[100vh] h-[40vh]">
             <Editor
-              height="90vh"
               defaultLanguage="json"
               defaultValue={JSON.stringify(formJSON, null, 2)}
               onMount={handleEditorInit}
@@ -76,24 +88,31 @@ export function FormPage() {
           </section>
         </Col>
 
-        <Col span={12}>
-          <section>
-            <Typography.Title level={2}>{formData.title}</Typography.Title>
-            <Form
-              name={formJSON.title}
-              onFinish={onFinish}
-              onFinishFailed={onFinishFailed}
-              autoComplete="off"
-            >
-              <RenderForm formData={formJSON.children} />
+        <Col
+          xs={{
+            span: 24,
+            order: 1,
+          }}
+          md={{
+            span: 12,
+            order: 2,
+          }}
+        >
+          <Typography.Title level={2}>{formJSON.title}</Typography.Title>
+          <Form
+            name={formJSON.title}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            autoComplete="off"
+          >
+            <RenderForm formData={formJSON.children} />
 
-              <Form.Item label={null} className="float-right mt-3">
-                <Button type="primary" htmlType="submit">
-                  Submit
-                </Button>
-              </Form.Item>
-            </Form>
-          </section>
+            <Form.Item label={null} className="float-right mt-3">
+              <Button type="primary" htmlType="submit">
+                Submit
+              </Button>
+            </Form.Item>
+          </Form>
         </Col>
       </Row>
     </main>
