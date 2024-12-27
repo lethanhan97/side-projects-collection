@@ -1,80 +1,45 @@
 import type { FormProps } from "antd";
-import { Button, Col, Form, Input, Row, Typography } from "antd";
+import { Alert, Button, Col, Form, Input, Row, Typography } from "antd";
 import { formData } from "./data";
-import type { FormInput, FormSection, FormStructure } from "./types";
-import Editor from "@monaco-editor/react";
+import type { FormStructure } from "./types";
+import Editor, { type OnMount } from "@monaco-editor/react";
 import { useRef, useState } from "react";
 import type { editor } from "monaco-editor";
 import { PlayCircleOutlined } from "@ant-design/icons";
-
-function RenderForm({ formData }: { formData: (FormSection | FormInput)[] }) {
-  return (
-    <>
-      {formData.map((node) => {
-        if (node.nodeType == "input") {
-          return (
-            <Form.Item
-              key={node.name}
-              label={node.label}
-              name={node.name}
-              rules={[{ required: node.required }]}
-            >
-              <Input {...(node.inputMeta || {})} />
-            </Form.Item>
-          );
-        }
-
-        return (
-          <div className="pl-3 pt-3" key={node.title}>
-            <Typography.Paragraph className="font-bold">
-              {node.title}
-            </Typography.Paragraph>
-
-            <RenderForm formData={node.children} />
-          </div>
-        );
-      })}
-    </>
-  );
-}
+import { RenderForm } from "./render-form";
+import { validateAndTransformEditorValue } from "./utils";
 
 export function FormPage() {
   const [formJSON, setFormJSON] = useState<FormStructure>(formData);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
   const onFinish: FormProps["onFinish"] = (values) => {
-    console.log("Success:", values);
+    alert(`Success: ${values}`);
   };
 
   const onFinishFailed: FormProps["onFinishFailed"] = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+    alert(`Failed: ${errorInfo}`);
   };
 
   const getEditorValue = () => editorRef.current?.getValue();
 
-  const handleRun = () => {
-    const value = getEditorValue();
-    const formStructure = validateAndTransformValue(value);
-
-    setFormJSON(formStructure);
+  const handleEditorInit: OnMount = (editor, monaco) => {
+    editorRef.current = editor;
   };
 
-  const validateAndTransformValue = (
-    value: string | undefined
-  ): FormStructure => {
-    if (!value) {
-      throw new Error("Invalid value");
-    }
+  const handleRun = () => {
+    const value = getEditorValue();
 
-    let valueJson: Record<string, unknown>;
+    let formStructure: FormStructure;
     try {
-      valueJson = JSON.parse(value);
-    } catch (e) {
-      throw new Error("Invalid JSON");
-    }
+      formStructure = validateAndTransformEditorValue(value);
 
-    // TODO: Proper validation
-    return valueJson as FormStructure;
+      setFormJSON(formStructure);
+      setErrorMessage(null);
+    } catch (e: unknown) {
+      if (e instanceof Error) setErrorMessage(e.message);
+    }
   };
 
   return (
@@ -83,8 +48,9 @@ export function FormPage() {
         <Typography.Title>Dynamic form demo</Typography.Title>
       </header>
 
-      <section className="mb-12 flex justify-center">
+      <section className="mb-6 flex flex-col justify-center items-center">
         <Button
+          className="w-[fit-content]"
           type="primary"
           icon={<PlayCircleOutlined />}
           size={"large"}
@@ -92,6 +58,10 @@ export function FormPage() {
         >
           Run
         </Button>
+
+        {errorMessage && (
+          <Alert className="mt-6" message={errorMessage} type="error" />
+        )}
       </section>
 
       <Row gutter={64}>
@@ -101,7 +71,7 @@ export function FormPage() {
               height="90vh"
               defaultLanguage="json"
               defaultValue={JSON.stringify(formJSON, null, 2)}
-              onMount={(editor) => (editorRef.current = editor)}
+              onMount={handleEditorInit}
             />
           </section>
         </Col>
