@@ -1,6 +1,6 @@
 import type { Route } from "./+types";
-import type { FormProps } from "antd";
-import { Affix, Alert, Button, Col, Form, Input, Row, Typography } from "antd";
+import type { CollapseProps, FormProps } from "antd";
+import { Alert, Button, Col, Collapse, Form, Row, Typography } from "antd";
 import { formData } from "./data";
 import Editor, { type OnMount } from "@monaco-editor/react";
 import { useRef, useState } from "react";
@@ -16,6 +16,39 @@ export function meta({}: Route.MetaArgs) {
     { name: "description", content: "JSON based dynamic form demo" },
   ];
 }
+
+const accordionItems: CollapseProps["items"] = [
+  {
+    key: "1",
+    label: "What is it?",
+    children: (
+      <>
+        <Typography.Paragraph>
+          It's a demo of a dynamic form that can be generated from a pre-defined
+          JSON structure. I came up with the idea when I was thinking of a
+          simple challenge for my friend (Minh Tien, I'm looking at you 👀).
+        </Typography.Paragraph>
+        <Typography.Paragraph>
+          It's a simple Proof of Concept, so it's not supporting all of the form
+          items available. This is mainly to show how one can render a tree
+          structure using React
+        </Typography.Paragraph>
+      </>
+    ),
+  },
+  {
+    key: "2",
+    label: "How to use it?",
+    children: (
+      <Typography.Paragraph>
+        Simply edit the JSON on the code editor on the left and click the "Run"
+        button. The idea is that there are 2 types of nodes: "input" and
+        "section". "Input" nodes describe the actual form field, while "Section"
+        nodes contains a children of either "input" or "section" nodes
+      </Typography.Paragraph>
+    ),
+  },
+];
 
 export default function Home() {
   const [form] = Form.useForm();
@@ -53,23 +86,25 @@ export default function Home() {
   };
 
   return (
-    <main className="px-3 py-3">
+    <div className="p-8">
       <header className="flex justify-center">
         <Typography.Title>Dynamic form demo</Typography.Title>
       </header>
 
+      <section className="my-6">
+        <Collapse items={accordionItems} accordion />
+      </section>
+
       <section className="mb-6 flex flex-col justify-center items-center">
-        <Affix offsetTop={50}>
-          <Button
-            className="w-[fit-content]"
-            type="primary"
-            icon={<PlayCircleOutlined />}
-            size={"large"}
-            onClick={handleRun}
-          >
-            Run
-          </Button>
-        </Affix>
+        <Button
+          className="w-[fit-content]"
+          type="primary"
+          icon={<PlayCircleOutlined />}
+          size={"large"}
+          onClick={handleRun}
+        >
+          Run
+        </Button>
 
         {errorMessage && (
           <Alert className="mt-6" message={errorMessage} type="error" />
@@ -113,6 +148,6 @@ export default function Home() {
           />
         </Col>
       </Row>
-    </main>
+    </div>
   );
 }
