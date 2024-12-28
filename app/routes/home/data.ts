@@ -1,4 +1,4 @@
-import type { FormStructure } from "./types";
+import type { FormStructure } from "../../components/dynamic-form/types";
 
 export const formData: FormStructure = {
   title: "Form title",

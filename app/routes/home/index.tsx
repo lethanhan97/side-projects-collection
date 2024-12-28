@@ -1,15 +1,23 @@
+import type { Route } from "./+types";
 import type { FormProps } from "antd";
 import { Affix, Alert, Button, Col, Form, Input, Row, Typography } from "antd";
 import { formData } from "./data";
-import type { FormStructure } from "./types";
 import Editor, { type OnMount } from "@monaco-editor/react";
 import { useRef, useState } from "react";
 import type { editor } from "monaco-editor";
 import { PlayCircleOutlined } from "@ant-design/icons";
-import { RenderForm } from "./render-form";
-import { validateAndTransformEditorValue } from "./utils";
+import type { FormStructure } from "../../components/dynamic-form/types";
+import { validateAndTransformEditorValue } from "../../components/dynamic-form/utils";
+import { DynamicForm } from "../../components/dynamic-form";
 
-export function FormPage() {
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Dynamic form demo" },
+    { name: "description", content: "JSON based dynamic form demo" },
+  ];
+}
+
+export default function Home() {
   const [form] = Form.useForm();
   const [formJSON, setFormJSON] = useState<FormStructure>(formData);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -98,21 +106,11 @@ export function FormPage() {
             order: 2,
           }}
         >
-          <Typography.Title level={2}>{formJSON.title}</Typography.Title>
-          <Form
-            name={formJSON.title}
+          <DynamicForm
+            formData={formJSON}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
-            autoComplete="off"
-          >
-            <RenderForm formData={formJSON.children} />
-
-            <Form.Item label={null} className="float-right mt-3">
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
-            </Form.Item>
-          </Form>
+          />
         </Col>
       </Row>
     </main>
