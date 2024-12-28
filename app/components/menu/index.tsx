@@ -34,13 +34,15 @@ function BaseMenu({
   return (
     <nav className="p-2">
       {!hideTitle && (
-        <Typography.Paragraph className="p-3 text-center text-xl">
-          👋
-        </Typography.Paragraph>
+        <NavLink to="/" end>
+          <Typography.Paragraph className="p-3 text-center text-xl">
+            👋
+          </Typography.Paragraph>
+        </NavLink>
       )}
 
       <ul className="flex flex-col h-[100vh] max-h-[100vh] min-h-[100vh] min-w-[10rem] overflow-auto">
-        <NavItem to="/" closeDrawer={closeDrawer} end>
+        <NavItem to="/dynamic-form" closeDrawer={closeDrawer} end>
           Dynamic Form
         </NavItem>
         <NavItem to="/form-builder" closeDrawer={closeDrawer} end>
@@ -69,7 +71,16 @@ export function Menu() {
       <div className="block: sm:hidden absolute top-0 left-0 p-5 z-50">
         <Button onClick={showDrawer} icon={<MenuOutlined />}></Button>
       </div>
-      <Drawer title="Menu" placement="left" onClose={closeDrawer} open={open}>
+      <Drawer
+        title={
+          <NavLink to="/" onClick={closeDrawer} end>
+            Menu
+          </NavLink>
+        }
+        placement="left"
+        onClose={closeDrawer}
+        open={open}
+      >
         <BaseMenu closeDrawer={() => setOpen(false)} hideTitle />
       </Drawer>
     </>

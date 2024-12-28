@@ -50,7 +50,7 @@ const accordionItems: CollapseProps["items"] = [
   },
 ];
 
-export default function Home() {
+export default function DynamicFormPage() {
   const [form] = Form.useForm();
   const [formJSON, setFormJSON] = useState<FormStructure>(formData);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

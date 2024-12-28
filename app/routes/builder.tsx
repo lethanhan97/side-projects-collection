@@ -1,5 +1,5 @@
 import { Typography } from "antd";
-import type { Route } from "./home/+types";
+import type { Route } from "./+types/builder";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -8,7 +8,7 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function Home() {
+export default function FormBuilderPage() {
   return (
     <Typography.Paragraph className="p-8">Coming soon 😍</Typography.Paragraph>
   );
